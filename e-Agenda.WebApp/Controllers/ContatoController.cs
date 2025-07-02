@@ -5,18 +5,17 @@ using e_Agenda.Infraestrura.Arquivos.Compartilhado;
 using e_Agenda.Dominio.ModuloContato;
 using e_Agenda.Infraestrura.Arquivos.ModuloContato;
 using e_Agenda.WebApp.Models;
+using eAgenda.Infraestrutura.SqlServer;
 
 namespace e_Agenda.WebApp.Controllers
 {
     [Route("contatos")]
     public class ContatoController : Controller
     {
-        private readonly ContextoDados contextoDados;
         private readonly IRepositorioContato repositorioContato;
         public ContatoController()
         {
-            contextoDados = new ContextoDados(true);
-            repositorioContato = new RepositorioContatoEmArquivo(contextoDados);
+            repositorioContato = new RepositorioContatoEmSql();
         }
         
         [HttpGet]

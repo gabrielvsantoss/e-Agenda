@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\e-Agenda.Infraestrutura.Aquivos\e-Agenda.Infraestrutura.Aquivos.csproj" />
+    <ProjectReference Include="..\eAgenda.Infraestrutura\eAgenda.Infraestrutura.SqlServer.csproj" />
   </ItemGroup>
 
 </Project>

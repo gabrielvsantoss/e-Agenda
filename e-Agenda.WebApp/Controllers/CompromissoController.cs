@@ -18,61 +18,66 @@ namespace e_Agenda.WebApp.Controllers
         private readonly IRepositorioCompromisso repositorioCompromisso;
         private readonly IRepositorioContato repositorioContato;
 
-            public CompromissoController()
+        public CompromissoController()
+        {
+            contextoDados = new ContextoDados(true);
+            repositorioCompromisso = new RepositorioCompromissoEmArquivo(contextoDados);
+            repositorioContato = new RepositorioContatoEmArquivo(contextoDados);
+        }
+
+
+        [HttpGet()]
+        public IActionResult Index()
+        {
+            var compromissos = repositorioCompromisso.SelecionarRegistros();
+            var visualizarVM = new VisualizarCompromissosViewModel(compromissos);
+            return View(visualizarVM);
+        }
+
+        [HttpGet("cadastrar")]
+        public IActionResult Cadastrar()
+        {
+            var contextoDados = new ContextoDados(true);
+
+            var contatos = repositorioContato.SelecionarRegistros();
+            var compromissos = repositorioCompromisso.SelecionarRegistros();
+
+            CadastrarCompromissoViewModel cadastrarVM = new CadastrarCompromissoViewModel(contatos);
+
+            return View(cadastrarVM);
+        }
+
+        [HttpPost("cadastrar")]
+        public IActionResult Cadastrar(CadastrarCompromissoViewModel cadastrarVM)
+        {
+
+            var compromissos = repositorioCompromisso.SelecionarRegistros();
+
+            foreach (var item in compromissos)
             {
-                contextoDados = new ContextoDados(true);
-                repositorioCompromisso = new RepositorioCompromissoEmArquivo(contextoDados);
-                repositorioContato = new RepositorioContatoEmArquivo(contextoDados);
-            }   
 
 
-            [HttpGet()]
-            public IActionResult Index()
-            {
-                var compromissos = repositorioCompromisso.SelecionarRegistros();
-                var visualizarVM = new VisualizarCompromissosViewModel(compromissos);
-                return View(visualizarVM);
-             }
+                if (item.DataOcorrencia == cadastrarVM.DataOcorrencia && item.HoraInicio.ToString() == cadastrarVM.HoraInicio.ToString())
+                {
+                    ModelState.AddModelError("Cadastro Unico", "Já existe um compromisso nesse mesmo dia e horario");
+                    break;
+                }
 
-            [HttpGet("cadastrar")]
-            public IActionResult Cadastrar()
-            {
-                var contextoDados = new ContextoDados(true);
-
-                var contatos = repositorioContato.SelecionarRegistros();
-                var compromissos = repositorioCompromisso.SelecionarRegistros();
-
-                CadastrarCompromissoViewModel cadastrarVM = new CadastrarCompromissoViewModel(contatos);
-
-                return View(cadastrarVM);
             }
 
-            [HttpPost("cadastrar")]
-            public IActionResult Cadastrar(CadastrarCompromissoViewModel cadastrarVM)
+            TimeSpan horaInicio = cadastrarVM.HoraInicio;
+            TimeSpan horaTermino = cadastrarVM.HoraTermino;
+
+            if (horaTermino < horaInicio)
             {
+                ModelState.AddModelError("Cadastro Unico", "A hora de término não pode ser anterior à hora de início.");
+            }
 
-                var compromissos = repositorioCompromisso.SelecionarRegistros();
-          
-                foreach (var item in compromissos)
-                {
-                    if (item.DataOcorrencia == cadastrarVM.DataOcorrencia && item.HoraInicio == cadastrarVM.HoraInicio)
-                    {
-                        ModelState.AddModelError("Cadastro Unico", "Já existe um compromisso nesse mesmo dia e horario");
-                        break;
-                    }
-                }
-                TimeSpan horaInicio = TimeSpan.ParseExact(cadastrarVM.HoraInicio, @"hh\:mm", null);
-                TimeSpan horaTermino = TimeSpan.ParseExact(cadastrarVM.HoraTermino, @"hh\:mm", null);
 
-                if (horaTermino < horaInicio)
-                {
-                    ModelState.AddModelError("Cadastro Unico", "A hora de término não pode ser anterior à hora de início.");
-                }
-
-                if (cadastrarVM.DataOcorrencia < DateTime.Now.Date)
-                {
-                    ModelState.AddModelError("Cadastro Unico", "A data de ocorrencia nao pode ser menor que a data atual");
-                }
+            if (cadastrarVM.DataOcorrencia < DateTime.Now.Date)
+            {
+                ModelState.AddModelError("Cadastro Unico", "A data de ocorrencia nao pode ser menor que a data atual");
+            }
 
             if (cadastrarVM.TipoCompromisso == "Online" && string.IsNullOrWhiteSpace(cadastrarVM.Link))
             {
@@ -85,12 +90,12 @@ namespace e_Agenda.WebApp.Controllers
             }
 
             if (!ModelState.IsValid)
-                {
-                    cadastrarVM.ContatosDisponiveis = repositorioContato.SelecionarRegistros().ParaSelecionarContatoViewModel();
-                    return View(cadastrarVM);
-                }
+            {
+                cadastrarVM.ContatosDisponiveis = repositorioContato.SelecionarRegistros().ParaSelecionarContatoViewModel();
+                return View(cadastrarVM);
+            }
 
-            
+
             var entidade = cadastrarVM.ParaEntidade(repositorioContato.SelecionarRegistros());
 
             repositorioCompromisso.CadastrarRegistro(entidade);
@@ -98,6 +103,8 @@ namespace e_Agenda.WebApp.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+    
+
             
         [HttpGet("editar/{Id:guid}")]
         public IActionResult Editar([FromRoute] Guid id)
@@ -122,8 +129,8 @@ namespace e_Agenda.WebApp.Controllers
                     break;
                 }
             }
-            TimeSpan horaInicio = TimeSpan.ParseExact(editarVM.HoraInicio, @"hh\:mm", null);
-            TimeSpan horaTermino = TimeSpan.ParseExact(editarVM.HoraTermino, @"hh\:mm", null);
+            TimeSpan horaInicio = editarVM.HoraInicio;
+            TimeSpan horaTermino = editarVM.HoraTermino;
 
             if (horaTermino < horaInicio)
             {

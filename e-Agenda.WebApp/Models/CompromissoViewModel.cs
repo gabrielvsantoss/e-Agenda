@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using e_Agenda.Dominio.ModuloCompromisso;
 using e_Agenda.Dominio.ModuloContato;
 using e_Agenda.WebApp.Extensions;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 namespace e_Agenda.ConsoleApp.Models
 {
@@ -22,10 +23,10 @@ namespace e_Agenda.ConsoleApp.Models
         public DateTime DataOcorrencia { get; set; }
 
         [Required(ErrorMessage = "O Campo Hora de Inico é obrigatório")]
-        public string HoraInicio { get; set; }
+        public TimeSpan HoraInicio { get; set; }
 
         [Required(ErrorMessage = "O Campo Hora de Termino é obrigatório")]
-        public string HoraTermino { get; set; }
+        public TimeSpan HoraTermino { get; set; }
         public string TipoCompromisso { get; set; }
         public string Local { get; set; }
         public string Link { get; set; }
@@ -88,7 +89,7 @@ namespace e_Agenda.ConsoleApp.Models
         {
 
         }
-        public EditarCompromissoViewModel(Guid id, string titulo, string assunto,  DateTime dataOcorrencia, string horaInicio, string horaTermino, string tipoCompromisso, string local, string link, Guid contatoId)
+        public EditarCompromissoViewModel(Guid id, string titulo, string assunto,  DateTime dataOcorrencia, TimeSpan horaInicio, TimeSpan horaTermino, string tipoCompromisso, string local, string link, Guid contatoId)
         {
             Id = id;
             Titulo = titulo;
@@ -101,7 +102,7 @@ namespace e_Agenda.ConsoleApp.Models
             Link = link;
             ContatoId = contatoId;
         }
-        public EditarCompromissoViewModel(Guid id, string titulo, string assunto, DateTime dataOcorrencia, string horaInicio, string horaTermino, string tipoCompromisso, string local, string link)
+        public EditarCompromissoViewModel(Guid id, string titulo, string assunto, DateTime dataOcorrencia, TimeSpan horaInicio, TimeSpan horaTermino, string tipoCompromisso, string local, string link)
         {
             Id = id;
             Titulo = titulo;
@@ -133,15 +134,15 @@ namespace e_Agenda.ConsoleApp.Models
             public string Titulo { get; set; }
             public string Assunto { get; set; }
             public DateTime DataOcorrencia { get; set; }
-            public string HoraInicio { get; set; }
-            public string HoraTermino { get; set; }
+            public TimeSpan HoraInicio { get; set; }
+            public TimeSpan HoraTermino { get; set; }
             public string TipoCompromisso { get; set; }
             public string Local { get; set; }
             public string Link { get; set; }
             public Guid ContatoId { get; set; }
             public string NomeContato { get; set; }
         
-        public DetalhesCompromissoViewModel(Guid id, string titulo, string assunto, DateTime dataOcorrencia, string horaInicio, string horaTermino, string tipoCompromisso, string local, string link, Guid contatoId)
+        public DetalhesCompromissoViewModel(Guid id, string titulo, string assunto, DateTime dataOcorrencia, TimeSpan horaInicio, TimeSpan horaTermino, string tipoCompromisso, string local, string link, Guid contatoId)
         {
             Id = id;
             Titulo = titulo;
@@ -154,7 +155,7 @@ namespace e_Agenda.ConsoleApp.Models
             Link = link;
             ContatoId = contatoId;
         }
-        public DetalhesCompromissoViewModel(Guid id, string titulo, string assunto, DateTime dataOcorrencia, string horaInicio, string horaTermino, string tipoCompromisso, string local, string link) 
+        public DetalhesCompromissoViewModel(Guid id, string titulo, string assunto, DateTime dataOcorrencia, TimeSpan horaInicio, TimeSpan horaTermino, string tipoCompromisso, string local, string link) 
         {
             Id = id;
             Titulo = titulo;
