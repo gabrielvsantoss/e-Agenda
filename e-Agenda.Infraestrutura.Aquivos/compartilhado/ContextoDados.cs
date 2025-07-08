@@ -11,8 +11,11 @@ namespace e_Agenda.Infraestrura.Arquivos.Compartilhado;
 
 public class ContextoDados
 {
-    private string pastaArmazenamento = "C:\\temp";
-    private string arquivoArmazenamento = "dados-e-agenda.json";
+    private string pastaArmazenamento = Path.Combine(
+    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+    "eAgenda"
+    );
+    private string arquivoArmazenamento = "dados.json";
 
     public List<Contato> Contatos { get; set; }
     public List<Compromisso> Compromissos { get; set; }
