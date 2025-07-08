@@ -6,16 +6,19 @@ using e_Agenda.Dominio.ModuloContato;
 using e_Agenda.Infraestrura.Arquivos.ModuloContato;
 using e_Agenda.WebApp.Models;
 using eAgenda.Infraestrutura.SqlServer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace e_Agenda.WebApp.Controllers
 {
     [Route("contatos")]
     public class ContatoController : Controller
     {
+        private readonly ContextoDados contextoDados;
         private readonly IRepositorioContato repositorioContato;
         public ContatoController()
         {
-            repositorioContato = new RepositorioContatoEmSql();
+            contextoDados = new ContextoDados(true);
+            repositorioContato = new RepositorioContatoEmArquivo(contextoDados);
         }
         
         [HttpGet]
